@@ -1,7 +1,6 @@
 from myvect import Vector
 import customtkinter as ctk
-
-
+ 
 class VectorCalc():
 
     #Building a class for holding and handling vector variables 
@@ -41,7 +40,7 @@ class VectorCalc():
                 self.count += 1
             except ValueError:
                 entry.delete(-1, "end")
-                entry.insert(-1, f"User Error: Bad or Same List Given -->{vectorStr}")
+                entry.insert(-1, f"Bad or Same List Given -->{vectorStr}")
 
         def delLast(self):
             try:
@@ -66,7 +65,6 @@ class VectorCalc():
         def plugIn(self, entry, varEntry):
             varName = varEntry.get()
             #check for a match in dict
-            print()
             if varName in self.vectDict.keys():
                 varEntry.delete(-1, "end")
                 VectorCalc.entryAdd(entry, varName)
@@ -108,7 +106,7 @@ class VectorCalc():
         btn_5 = ctk.CTkButton(root, text="1", command=lambda: VectorCalc.entryAdd(inputArea, "1"))
         btn_6 = ctk.CTkButton(root, text="2", command=lambda: VectorCalc.entryAdd(inputArea, "2"))
         btn_7 = ctk.CTkButton(root, text="3", command=lambda: VectorCalc.entryAdd(inputArea, "3"))
-        btn_8 = ctk.CTkButton(root, text="n/a")
+        btn_8 = ctk.CTkButton(root, text="AC", command=lambda: inputArea.delete(-1, "end"))
         btn_4.grid(row=4, column=0, padx=10, pady=10, sticky="ns")
         btn_5.grid(row=4, column=1, padx=10, pady=10, sticky="ns")
         btn_6.grid(row=4, column=2, padx=10, pady=10, sticky="ns")
@@ -118,8 +116,8 @@ class VectorCalc():
         btn_9 = ctk.CTkButton(root, text="4", command=lambda: VectorCalc.entryAdd(inputArea, "4"))
         btn_10 = ctk.CTkButton(root, text="5", command=lambda: VectorCalc.entryAdd(inputArea, "5"))
         btn_11 = ctk.CTkButton(root, text="6", command=lambda: VectorCalc.entryAdd(inputArea, "6"))
-        btn_12 = ctk.CTkButton(root, text="n/a")
-        btn_13 = ctk.CTkButton(root, text="n/a")
+        btn_12 = ctk.CTkButton(root, text="\u00F7", command=lambda: VectorCalc.entryAdd(inputArea, "\u00F7"))
+        btn_13 = ctk.CTkButton(root, text="+", command=lambda: VectorCalc.entryAdd(inputArea, "+"))
         btn_9.grid(row=5, column=0, padx=10, pady=10, sticky="ns")
         btn_10.grid(row=5, column=1, padx=10, pady=10, sticky="ns")
         btn_11.grid(row=5, column=2, padx=10, pady=10, sticky="ns")
@@ -129,8 +127,8 @@ class VectorCalc():
         btn_14 = ctk.CTkButton(root, text="7", command=lambda: VectorCalc.entryAdd(inputArea, "7"))
         btn_15 = ctk.CTkButton(root, text="8", command=lambda: VectorCalc.entryAdd(inputArea, "8"))
         btn_16 = ctk.CTkButton(root, text="9", command=lambda: VectorCalc.entryAdd(inputArea, "9"))
-        btn_17 = ctk.CTkButton(root, text="n/a")
-        btn_18 = ctk.CTkButton(root, text="n/a")
+        btn_17 = ctk.CTkButton(root, text="\u00D7", command=lambda: VectorCalc.entryAdd(inputArea, "\u00D7"))
+        btn_18 = ctk.CTkButton(root, text="-", command=lambda: VectorCalc.entryAdd(inputArea, "-"))
         btn_14.grid(row=6, column=0, padx=10, pady=10, sticky="ns")
         btn_15.grid(row=6, column=1, padx=10, pady=10, sticky="ns")
         btn_16.grid(row=6, column=2, padx=10, pady=10, sticky="ns")
@@ -142,7 +140,7 @@ class VectorCalc():
         sbtn_2 = ctk.CTkButton(root, text="n/a")
         sbtn_3 = ctk.CTkButton(root, text="n/a")
         sbtn_4 = ctk.CTkButton(root, text="n/a")
-        sbtn_5 = ctk.CTkButton(root, text="n/a")
+        sbtn_5 = ctk.CTkButton(root, text="=", command=lambda: self.getcalc(inputArea, frame.vectDict))
         sbtn_1.grid(row=7, column=0, padx=10, pady=10, sticky="ns")
         sbtn_2.grid(row=7, column=1, padx=10, pady=10, sticky="ns")
         sbtn_3.grid(row=7, column=2, padx=10, pady=10, sticky="ns")
@@ -152,8 +150,111 @@ class VectorCalc():
     def entryAdd(entry, strToAdd):
         entry.insert("end", strToAdd)
 
-    def calculate(self, entry):
-        pass
+    def calc(self, x, y, operation):
+        if operation == "+":
+            return x + y
+
+        elif operation == "\u00F7":
+            return x / y
+
+        elif operation == "-":
+            return x - y
+
+        elif operation == "\u00D7":
+            return x * y
+
+    def getcalc(self, entry, myDict):
+        numberStr = entry.get()
+        answer = 0
+        ukStr = num1 = num2 = op = s_op = ""
+
+        for char in numberStr:
+        #After adding the first two numbers, we keeping adding the answer onto the second number
+            ukStr += char
+            if char in ('\u00F7','+','-','\u00D7'):
+                if num1 == "": 
+                    num1 = ukStr.split(char,1)[0]
+                    ukStr = ukStr.replace(f"{num1+char}", "")
+                    if s_op == "":
+                        op = char
+                
+            #checking cases after s_op
+                else:
+                    num2 = ukStr.split(f'{char}',1)[0]
+                    ukStr = ukStr.replace(f"{num2+char}", "")
+     
+                #Setting each str to int, float, or vector class
+                    if type(num1) != int:
+                        if type(num1) == str and num1.isdecimal():
+                            num1 = int(num1)
+                        elif num1[0] == 'v':
+                            num1 = myDict.get(num1)
+                        else: 
+                            try:
+                                num1 = float(num1)
+                            except ValueError:
+                                pass
+
+                    if num2.isdecimal():
+                        num2 = int(num2)
+                    elif num2[0] == 'v':
+                        num2 = myDict.get(num2)
+                    else:
+                        try:
+                            num2 = float(num2)
+                        except ValueError:
+                            pass
+
+                    if isinstance(num1, (int, float, Vector)) and isinstance(num2, (int, float, Vector)):
+                        if s_op != "":
+                            op = s_op
+                            s_op = char
+                            answer = self.calc(answer, num2, op)
+                        else:
+                            s_op = char
+                            answer += self.calc(num1, num2, op)
+                        entry.delete(-1, "end")
+                        entry.insert(-1, f"{answer}")
+                        
+                    else:
+                        entry.delete(-1, "end")
+                        entry.insert(-1, f"Bad Values Given")
+
+        #When its the last digit doesnt care abt setting saved op buit if it wasnt set
+        lastNum = ukStr 
+
+        if lastNum.isdecimal():
+            lastNum = int(lastNum)
+        elif lastNum[0] == "v":
+            lastNum = myDict.get(lastNum)
+        else:
+            try:
+                lastNum = float(lastNum)
+            except ValueError:
+                pass    
+        
+        if type(num1) != int and not(isinstance(num1, Vector)):
+            if num1.isdecimal():
+                num1 = int(num1)
+            elif num1[0] == "v":
+                num1 = myDict.get(num1)
+            else:
+                try:
+                    num1 = float(num1)
+                except ValueError:
+                    pass 
+
+        if isinstance(lastNum, (int, float, Vector)) and isinstance(num1, (int, float, Vector)):
+            if s_op == "":
+                answer += self.calc(num1, lastNum, op)
+            else:
+                answer = self.calc(answer, lastNum, s_op)
+            entry.delete(-1, "end")
+            entry.insert(-1, f"{answer}")
+
+        else:
+            entry.delete(-1, "end")
+            entry.insert(-1, "Bad Values Given")
 
 
 if __name__ == "__main__": 
