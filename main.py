@@ -417,15 +417,15 @@ class VectorCalc():
                 entry.delete(-1, "end")
                 entry.insert("end", f"Invalid Equation") 
 
-    def collect_list(self, vframe, dtitle):  #Collects vectors, and string version
+    def collect_list(self, vdict, dtitle):  #Collects vectors, and string version
         list = []
         prompt = ctk.CTkInputDialog(title=f"{dtitle}", text="Input vectors as such: v3, v4...")
         p = prompt.get_input()
         if p != None:
             for v in p.split(","):
                 v = v.strip()
-                if v in vframe.vectDict.keys():
-                    list.append(vframe.vectDict[v])
+                if v in vdict:
+                    list.append(vdict[v])
                 else:
                     return 0, p
         else:
@@ -434,7 +434,8 @@ class VectorCalc():
         return list, p
 
     def dot_p(self, vframe, entry):
-        result, potent_err = self.collect_list(vframe, "Dot Product")
+        vectD = {key: val[0] for key, val in vframe.vectDict.items()}
+        result, potent_err = self.collect_list(vectD, "Dot Product")
         if potent_err == None:
             entry.delete(-1, "end")
             entry.insert("end", f"Error: {potent_err}")
@@ -467,6 +468,7 @@ class VectorCalc():
         self.updtHistory(input, (self.history_cnt, sum, 'p'))
 
     def any_dist(self, vframe, entry): #avg pair-wise distance d
+        vectD = {key: val[0] for key, val in vframe.vectDict.items()}
         def dist(v1, v2): #straight-line method
             square_eud_dist = 0
             if v1.len >= v2.len:
@@ -484,7 +486,7 @@ class VectorCalc():
 
             return square_eud_dist**0.5
 
-        result, potent_err = self.collect_list(vframe, "Distance of Vectors")
+        result, potent_err = self.collect_list(vectD, "Distance of Vectors")
         if potent_err == None:
             entry.delete(-1, "end")
             entry.insert("end", f"Error: {potent_err}")
